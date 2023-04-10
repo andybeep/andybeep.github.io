@@ -1,0 +1,17 @@
+.project {
+  display: inline-block;
+  width: 200px;
+  margin: 10px;
+  text-align: center;
+}
+
+.project img {
+  width: 100%;
+  height: auto;
+}
+
+.project h3 {
+  margin-top: 5px;
+  font-size: 18px;
+  font-weight: normal;
+}

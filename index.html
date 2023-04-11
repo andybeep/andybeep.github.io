@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Random Shapes</title>
+    <style>
+      /* Set the height of the html and body elements to 100% so they fill the screen */
+      html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+      }
+      /* Style the shapes */
+      .shape {
+        position: absolute;
+      }
+    </style>
+  </head>
+  <body>
+    <script>
+      const NUM_SHAPES = 50; // Number of shapes to create
+
+      // Get the user's location using the browser's geolocation API
+      navigator.geolocation.getCurrentPosition(success, error);
+      
+      // Callback function for geolocation success
+      function success(position) {
+        const lat = position.coords.latitude;
+        const lon = position.coords.longitude;
+        
+        // Use a weather API to get the current weather conditions for the user's location
+        const API_KEY = "your-api-key-here";
+        const API_URL = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${API_KEY}`;
+        fetch(API_URL)
+          .then(response => response.json())
+          .then(data => {
+            const temperature = data.main.temp;
+            const weather = data.weather[0].main.toLowerCase();
+            
+            // Generate random shapes and add them to the page
+            for (let i = 0; i < NUM_SHAPES; i++) {
+              // Create a new shape element with a random size and position
+              const shape = document.createElement("div");
+              shape.classList.add("shape");
+              shape.style.width = `${Math.random() * 100 + 50}px`;
+              shape.style.height = `${Math.random() * 100 + 50}px`;
+              shape.style.top = `${Math.random() * (window.innerHeight - parseInt(shape.style.height))}px`;
+              shape.style.left = `${Math.random() * (window.innerWidth - parseInt(shape.style.width))}px`;
+              
+              // Set the color of the shape based on the current weather conditions
+              let color;
+              if (weather === "clear") {
+                color = "yellow";
+              } else if (weather === "clouds") {
+                color = "gray";
+              } else if (weather === "rain") {
+                color = "blue";
+              } else if (weather === "snow") {
+                color = "white";
+              } else {
+                color = "black";
+              }
+              shape.style.backgroundColor = color;
+              
+              document.body.appendChild(shape);
+              
+              // Add event listeners to make the shapes movable with the mouse
+              let isDragging = false;
+              let mouseX = 0;
+              let mouseY = 0;
+              shape.addEventListener("mousedown", function(event) {
+                isDragging = true;
+                mouseX = event.clientX;
+                mouseY = event.clientY;
+              });
+              shape.addEventListener("mousemove", function(event) {
+                if (isDragging) {
+                  const deltaX = event.clientX - mouseX;
+                  const deltaY = event.clientY - mouseY;
+                  const newTop = parseInt(shape.style.top) + deltaY;
+                  const newLeft = parseInt(shape.style.left) + deltaX;
+                  shape.style.top = `${newTop}px`;
+                  shape.style.left = `${newLeft}px`;
+                  mouseX = event.clientX;
+                  mouseY = event.clientY;
+                }
+              });
+              shape.addEventListener("mouseup", function(event) {
+                isDragging = false;
+                       });
+        }
+      })
+      .catch(error => console.log(error));
+  }
+  
+  // Callback function for geolocation error
+  function error(error) {
+    console.log(error.message);
+  }
+</script>
+</body>
+</html>
